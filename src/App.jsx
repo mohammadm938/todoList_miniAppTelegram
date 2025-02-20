@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [filter, setFilter] = useState("all"); // all, completed, incomplete
 
   const webApp = window.Telegram.WebApp;
   const user = window.Telegram.WebApp.initDataUnsafe?.user;
@@ -20,8 +21,6 @@ export default function App() {
     secondaryBgColor:
       themeParams.secondary_bg_color || (isDarkMode ? "#232E3C" : "#F0F2F5"),
   };
-
-  const [filter, setFilter] = useState("all"); // all, completed, incomplete
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === "completed") return task.completed;
@@ -54,6 +53,20 @@ export default function App() {
   const deleteTask = (taskId) => {
     setTasks(tasks.filter((t) => t.id !== taskId));
   };
+
+  // load tasks from local storage
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    setTasks(savedTasks);
+    console.log("saved tasks", savedTasks);
+  }, []);
+
+  // save tasks to local storage
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    console.log("new taskk", tasks);
+  }, [tasks]);
+
   return (
     <div
       className="min-h-screen p-4"
@@ -67,6 +80,8 @@ export default function App() {
         style={{ backgroundColor: styles.secondaryBgColor }}
       >
         <h1 className="text-2xl font-bold mb-4">لیست کارها</h1>
+
+        {/* add task component */}
         <div className="flex mb-4 space-x-2">
           <input
             type="text"
@@ -92,6 +107,7 @@ export default function App() {
           </button>
         </div>
 
+        {/* filter component */}
         <div className="flex justify-between items-center mt-8 gap-x-2 mb-4 ">
           <button
             className={`p-2 rounded-lg ${
@@ -130,7 +146,7 @@ export default function App() {
             انجام‌نشده
           </button>
         </div>
-
+        {/* tasks component */}
         <ul className="mt-8 flex flex-col gap-y-2">
           {filteredTasks.map((task, index) => (
             <li
