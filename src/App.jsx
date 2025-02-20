@@ -21,6 +21,14 @@ export default function App() {
       themeParams.secondary_bg_color || (isDarkMode ? "#232E3C" : "#F0F2F5"),
   };
 
+  const [filter, setFilter] = useState("all"); // all, completed, incomplete
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "completed") return task.completed;
+    if (filter === "incomplete") return !task.completed;
+    return true;
+  });
+
   const toggleTaskCompletion = (taskId) => {
     setTasks(
       tasks.map((task) =>
@@ -36,6 +44,7 @@ export default function App() {
         {
           id: Date.now(),
           text: newTask,
+          completed: false,
         },
       ]);
       setNewTask("");
@@ -72,8 +81,8 @@ export default function App() {
             }}
           />
           <button
-            className="p-2 rounded-lg"
             onClick={() => addTask()}
+            className="p-2 rounded-lg hover:opacity-90 transition-all"
             style={{
               backgroundColor: styles.buttonColor,
               color: styles.buttonTextColor,
@@ -83,8 +92,47 @@ export default function App() {
           </button>
         </div>
 
-        <ul className="pt-8 flex flex-col gap-y-2">
-          {tasks.map((task, index) => (
+        <div className="flex justify-between items-center mt-8 gap-x-2 mb-4 ">
+          <button
+            className={`p-2 rounded-lg ${
+              filter === "all" ? "opacity-100" : "opacity-50"
+            }`}
+            style={{
+              backgroundColor: styles.buttonColor,
+              color: styles.buttonTextColor,
+            }}
+            onClick={() => setFilter("all")}
+          >
+            همه
+          </button>
+          <button
+            className={`p-2 rounded-lg ${
+              filter === "completed" ? "opacity-100" : "opacity-50"
+            }`}
+            style={{
+              backgroundColor: styles.buttonColor,
+              color: styles.buttonTextColor,
+            }}
+            onClick={() => setFilter("completed")}
+          >
+            انجام‌شده
+          </button>
+          <button
+            className={`p-2 rounded-lg ${
+              filter === "incomplete" ? "opacity-100" : "opacity-50"
+            }`}
+            style={{
+              backgroundColor: styles.buttonColor,
+              color: styles.buttonTextColor,
+            }}
+            onClick={() => setFilter("incomplete")}
+          >
+            انجام‌نشده
+          </button>
+        </div>
+
+        <ul className="mt-8 flex flex-col gap-y-2">
+          {filteredTasks.map((task, index) => (
             <li
               key={index}
               className="flex justify-between items-center p-3 rounded-lg mb-2"
